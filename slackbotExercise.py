@@ -4,8 +4,8 @@ import requests
 import json
 import csv
 
-USERTOKENSTRING =  # YOUR (SLACKBOT API) USER AUTH TOKEN
-URLTOKENSTRING =  # SLACKBOT REMOTE CONTROL URL TOKEN
+USERTOKENSTRING = "xoxp-2913296306-6123042416-6324706721-eb43ca"
+URLTOKENSTRING =  "EWdAWAl5ycGb5SG8Xp4MJQiQ"
 
 def extractSlackUsers(token):
     # Set token parameter of Slack API call
@@ -33,18 +33,19 @@ def extractSlackUsers(token):
 def selectExerciseAndStartTime():
 
     # Exercise (2 Forms of Strings)
+    arms = ["PUSHUPS"]
     exercises = [" PUSHUPS ", " PUSHUPS ", " SECOND PLANK ", " SITUPS ", " SECOND WALL SIT "]
     exerciseAnnouncements = ["PUSHUPS", "PUSHUPS", "PLANK", "SITUPS", "WALLSIT"]
 
     # Random Number generator for Reps/Seconds and Exercise
-    nextTimeInterval = random.randrange(300, 1800)
+    nextTimeInterval = random.randrange(300, 1200)
     exerciseIndex = random.randrange(0, 5)
 
     # Announcement String of next lottery time
     lotteryTimeString = "NEXT LOTTERY FOR " + str(exerciseAnnouncements[exerciseIndex]) + " IS IN " + str(nextTimeInterval/60) + " MINUTES"
 
-    requests.post("https://ctrlla.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23general", data=lotteryTimeString)
-
+    print requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data=lotteryTimeString)
+    print "sleeping:",nextTimeInterval
     time.sleep(nextTimeInterval)
 
     return str(exercises[exerciseIndex])
@@ -53,22 +54,24 @@ def selectExerciseAndStartTime():
 def selectPerson(exercise):
 
     # Select number of reps
-    exerciseReps = random.randrange(25, 50)
+    exerciseReps = random.randrange(10, 35)
 
     # Pull all users from API
-    slackUsers = extractSlackUsers(USERTOKENSTRING)
+    # slackUsers = extractSlackUsers(USERTOKENSTRING)
+    slackUsers = ["@jorrie", "@austin_feight", "@jordan", "@adam", "@daniel", "@sara", "@abdul", "@evan", "@jeremy"]
 
     # Select index of team member from array of team members
     selection = random.randrange(0, len(slackUsers))
 
     lotteryWinnerString = str(exerciseReps) + str(exercise) + "RIGHT NOW " + slackUsers[selection]
     print lotteryWinnerString
-    requests.post("https://ctrlla.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23general", data=lotteryWinnerString)
+    requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data=lotteryWinnerString)
 
     with open("results.csv", 'a') as f:
         writer = csv.writer(f)
         writer.writerow([slackUsers[selection], exerciseReps, exercise])
 
+requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data="Good morning, @channel! Who's ready to get ripped?")
 for i in range(10000):
     exercise = selectExerciseAndStartTime()
     selectPerson(exercise)
