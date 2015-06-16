@@ -4,8 +4,8 @@ import requests
 import json
 import csv
 
-USERTOKENSTRING = "xoxp-2913296306-6123042416-6324706721-eb43ca"
-URLTOKENSTRING =  "EWdAWAl5ycGb5SG8Xp4MJQiQ"
+USERTOKENSTRING = ""
+URLTOKENSTRING =  ""
 
 def extractSlackUsers(token):
     # Set token parameter of Slack API call
