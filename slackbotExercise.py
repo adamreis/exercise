@@ -30,35 +30,51 @@ def extractSlackUsers(token):
 
     return filter(None, list(map(findUserNames, users)))
 
-def selectExerciseAndStartTime():
+def selectExerciseAndStartTime(exerciseType):
 
-    # Exercise (2 Forms of Strings)
-    arms = ["PUSHUPS"]
-    exercises = [" PUSHUPS ", " PUSHUPS ", " SECOND PLANK ", " SITUPS ", " SECOND WALL SIT "]
-    exerciseAnnouncements = ["PUSHUPS", "PUSHUPS", "PLANK", "SITUPS", "WALLSIT"]
+    exercises = []
+    exerciseAnnouncements = []
+    if exerciseType == "strength":
+	# Exercise (2 Forms of Strings)
+	exercises = [" PUSHUPS ", " PUSHUPS ", " SECOND PLANK ", " SITUPS ", " SECOND WALL SIT "]
+	exerciseAnnouncements = ["PUSHUPS", "PUSHUPS", "PLANK", "SITUPS", "WALLSIT"]
+
+    elif exerciseType == "stretch":
+	#Stretch
+	exercises = [" SECOND CALF STRETCH ", " SECOND QUAD STRETCH ", " SECOND HIP FLEXOR STRETCH ", 
+	" SECOND SIDE STRETCH ", " SECOND KNEE TO CHEST STRETCH ", " SECOND SHOULDER STRETCH ", 
+	" SECOND NECK STRETCH "]
+	exerciseAnnouncements = ["CALF STRETCH", "QUAD STRETCH", "HIP FLEXOR STRETCH", 
+	"SIDE STRETCH", "KNEE TO CHEST STRETCH", "SHOULDER STRETCH", "NECK STRETCH"] 
 
     # Random Number generator for Reps/Seconds and Exercise
     nextTimeInterval = random.randrange(300, 1200)
     exerciseIndex = random.randrange(0, 5)
 
     # Announcement String of next lottery time
-    lotteryTimeString = "NEXT LOTTERY FOR " + str(exerciseAnnouncements[exerciseIndex]) + " IS IN " + str(nextTimeInterval/60) + " MINUTES"
+    if exerciseType == "strength":
+	lotteryTimeString = "NEXT LOTTERY FOR " + str(exerciseAnnouncements[exerciseIndex]) + " IS IN " + str(nextTimeInterval/60) + " MINUTES"
 
-    print requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data=lotteryTimeString)
-    print "sleeping:",nextTimeInterval
-    time.sleep(nextTimeInterval)
+	print requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data=lotteryTimeString)
+	print lotteryTimeString
+	print "sleeping:",nextTimeInterval
+	time.sleep(nextTimeInterval)
 
     return str(exercises[exerciseIndex])
 
 
-def selectPerson(exercise):
+def selectPerson(exercise, exerciseType):
 
     # Select number of reps
     exerciseReps = random.randrange(10, 35)
 
     # Pull all users from API
     # slackUsers = extractSlackUsers(USERTOKENSTRING)
-    slackUsers = ["@jorrie", "@austin_feight", "@jordan", "@adam", "@daniel", "@sara", "@abdul", "@evan", "@jeremy"]
+    slackUsers = ""
+    if exerciseType == "strength":
+	slackUsers = ["@jorrie", "@austin_feight", "@jordan", "@adam", "@daniel", "@sara", "@abdul", "@evan", "@jeremy"]
+    elif exerciseType == "stretch":
+	slackUsers = ["@samara"]
 
     # Select index of team member from array of team members
     selection = random.randrange(0, len(slackUsers))
@@ -67,13 +83,15 @@ def selectPerson(exercise):
     print lotteryWinnerString
     requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data=lotteryWinnerString)
 
-    with open("results.csv", 'a') as f:
+    """with open("results.csv", 'a') as f:
         writer = csv.writer(f)
-        writer.writerow([slackUsers[selection], exerciseReps, exercise])
+        writer.writerow([slackUsers[selection], exerciseReps, exercise])"""
 
 requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data="Good morning, @channel! Who's ready to get ripped?")
 for i in range(10000):
-    exercise = selectExerciseAndStartTime()
-    selectPerson(exercise)
+    exercise = selectExerciseAndStartTime("strength")
+    stretch = selectExerciseAndStartTime("stretch")
+    selectPerson(exercise, "strength")
+    selectPerson(stretch, "stretch")
 
 
