@@ -114,7 +114,7 @@ def sleep_and_activity(channel_name, activities, time_interval):
     activity = activities.get(random.choice(list(activities.keys())))
     delay = int(random.randrange(*time_interval)/60.0)*60
     
-    announcement = "NEXT LOTTERY FOR {} IS IN {} MINUTES".format(activity.get("name"), delay/60)
+    announcement = "NEXT LOTTERY FOR {} IS IN {} MINUTES".format(activity.get("name"), int(delay/60))
     print(announcement)
     print(post_to_channel(channel_name, announcement))
     time.sleep(delay)
