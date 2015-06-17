@@ -79,6 +79,15 @@ STRETCHES = {
     },
 }
 
+def name_for_id(user_id):
+    params = {"token": SLACK_API_GET_TOKEN}
+    response = requests.get("https://slack.com/api/users.list", params=params)
+    users = response.json().get("members")
+    
+    for user in users:
+        if user.get("id") == user_id:
+            return user.get("name")
+
 def users_in_channel(channel_name):
     params = {"token": SLACK_API_GET_TOKEN}
     response = requests.get(LIST_CHANNEL_BASE_URL, params=params)
@@ -90,12 +99,9 @@ def users_in_channel(channel_name):
             break
     return ids
 
-def mention_for_user_id(user_id):
-    return "<@{}>".format(user_id)
-
 def random_user_mention(channel_name):
     ids = users_in_channel(channel_name)
-    return mention_for_user_id(random.choice(ids))
+    return "@" + name_for_id(random.choice(ids))
 
 def post_to_channel(channel_name, message):
     params = {
@@ -106,9 +112,9 @@ def post_to_channel(channel_name, message):
 
 def sleep_and_activity(channel_name, activities, time_interval):
     activity = activities.get(random.choice(list(activities.keys())))
-    delay = random.randrange(*time_interval)
+    delay = int(random.randrange(*time_interval)/60.0)*60
     
-    announcement = "NEXT LOTTERY FOR {} IS IN {} MINUTES".format(activity.get("name"), round(delay/60))
+    announcement = "NEXT LOTTERY FOR {} IS IN {} MINUTES".format(activity.get("name"), delay/60)
     print(announcement)
     print(post_to_channel(channel_name, announcement))
     time.sleep(delay)
@@ -129,5 +135,5 @@ def stretch():
     thread.start()
 
 if __name__ == "__main__":
-    exercise()
+    # exercise()
     stretch()
