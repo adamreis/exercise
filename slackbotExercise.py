@@ -1,97 +1,133 @@
-import random
-import time
+from secrets import SLACK_API_GET_TOKEN, SLACK_API_POST_TOKEN
+from pprint import pprint
 import requests
-import json
-import csv
+import time
+import threading
+import random
 
-USERTOKENSTRING = ""
-URLTOKENSTRING =  ""
+POST_MESSAGE_BASE_URL = "https://makeschool.slack.com/services/hooks/slackbot"
+LIST_CHANNEL_BASE_URL = "https://slack.com/api/channels.list"
 
-def extractSlackUsers(token):
-    # Set token parameter of Slack API call
-    tokenString = token
-    params = {"token": tokenString}
+EXERCISES = {
+    "pushups": {
+        "name": "PUSHUPS",
+        "units": "",
+        "rep_range": (10, 35)
+    },
+    "plank": {
+       "name": "PLANK",
+        "units": "SECOND ",
+        "rep_range": (10,35)
+    },
+    "situps": {
+       "name": "SITUPS",
+        "units": "",
+        "rep_range": (10,35)
+    },
+    "wall_sit": {
+       "name": "WALL SIT",
+        "units": "SECOND ",
+        "rep_range": (10,35)
+    },
+    "laps": {
+       "name": "LAP(S) AROUND OFFICE",
+        "units": "",
+        "rep_range": (1,3)
+    },
+    "burpies": {
+       "name": "BURPIES",
+        "units": "",
+        "rep_range": (10,25)
+    },
+}
 
-    # Capture Response as JSON
-    response = requests.get("https://slack.com/api/users.list", params=params)
-    users = json.loads(response.text, encoding='utf-8')["members"]
+STRETCHES = {
+    "calf": {
+       "name": "CALF STRETCH",
+        "units": "",
+        "rep_range": (1,2)
+    },
+    "quad": {
+       "name": "QUAD STRETCH",
+        "units": "",
+        "rep_range": (1,2)
+    },
+    "hip_flexor": {
+       "name": "HIP FLEXOR STRETCH",
+        "units": "",
+        "rep_range": (1,2)
+    },
+    "side": {
+       "name": "SIDE STRETCH",
+        "units": "",
+        "rep_range": (1,2)
+    },
+    "knee_to_chest": {
+       "name": "KNEE TO CHEST STRETCH",
+        "units": "",
+        "rep_range": (1,2)
+    },
+    "shoulder": {
+       "name": "SHOULDER STRETCH",
+        "units": "",
+        "rep_range": (1,2)
+    },
+    "neck": {
+       "name": "NECK STRETCH",
+        "units": "",
+        "rep_range": (1,2)
+    },
+}
 
-    def findUserNames(x):
-        if getStats(x) == False:
-            return None
-        name = "@" + x["name"].encode('utf-8')
-        return name.encode('utf-8')
-    def getStats(x):
-        params = {"token": tokenString, "user": x["id"]}
-        response = requests.get("https://slack.com/api/users.getPresence",
-                params=params)
-        status = json.loads(response.text, encoding='utf-8')["presence"]
-        return status == "active"
+def users_in_channel(channel_name):
+    params = {"token": SLACK_API_GET_TOKEN}
+    response = requests.get(LIST_CHANNEL_BASE_URL, params=params)
+    channels = response.json().get("channels")
+    ids = []
+    for channel in channels:
+        if channel.get("name") == channel_name:
+            ids = list(channel.get("members"))
+            break
+    return ids
 
-    return filter(None, list(map(findUserNames, users)))
+def mention_for_user_id(user_id):
+    return "<@{}>".format(user_id)
 
-def selectExerciseAndStartTime(exerciseType):
+def random_user_mention(channel_name):
+    ids = users_in_channel(channel_name)
+    return mention_for_user_id(random.choice(ids))
 
-    exercises = []
-    exerciseAnnouncements = []
-    if exerciseType == "strength":
-	# Exercise (2 Forms of Strings)
-	exercises = [" PUSHUPS ", " PUSHUPS ", " SECOND PLANK ", " SITUPS ", " SECOND WALL SIT "]
-	exerciseAnnouncements = ["PUSHUPS", "PUSHUPS", "PLANK", "SITUPS", "WALLSIT"]
+def post_to_channel(channel_name, message):
+    params = {
+        "token": SLACK_API_POST_TOKEN,
+        "channel": "#" + channel_name
+    }
+    return requests.post(POST_MESSAGE_BASE_URL, params=params, data=message)
 
-    elif exerciseType == "stretch":
-	#Stretch
-	exercises = [" SECOND CALF STRETCH ", " SECOND QUAD STRETCH ", " SECOND HIP FLEXOR STRETCH ", 
-	" SECOND SIDE STRETCH ", " SECOND KNEE TO CHEST STRETCH ", " SECOND SHOULDER STRETCH ", 
-	" SECOND NECK STRETCH "]
-	exerciseAnnouncements = ["CALF STRETCH", "QUAD STRETCH", "HIP FLEXOR STRETCH", 
-	"SIDE STRETCH", "KNEE TO CHEST STRETCH", "SHOULDER STRETCH", "NECK STRETCH"] 
+def sleep_and_activity(channel_name, activities, time_interval):
+    activity = activities.get(random.choice(list(activities.keys())))
+    delay = random.randrange(*time_interval)
+    
+    announcement = "NEXT LOTTERY FOR {} IS IN {} MINUTES".format(activity.get("name"), round(delay/60))
+    print(announcement)
+    print(post_to_channel(channel_name, announcement))
+    time.sleep(delay)
+    
+    victim = random_user_mention(channel_name)
+    reps = random.randrange(*activity.get("rep_range"))
+    message = "{} {}{} RIGHT NOW {}".format(reps, activity.get("units"), activity.get("name"), victim)
+    print(message)
+    print(post_to_channel(channel_name, message))
+    sleep_and_activity(channel_name, activities, time_interval)
 
-    # Random Number generator for Reps/Seconds and Exercise
-    nextTimeInterval = random.randrange(300, 1200)
-    exerciseIndex = random.randrange(0, 5)
+def exercise():
+    thread = threading.Thread(target=sleep_and_activity, args=("exercise", EXERCISES, (240, 900)), kwargs={})
+    thread.start()
 
-    # Announcement String of next lottery time
-    if exerciseType == "strength":
-	lotteryTimeString = "NEXT LOTTERY FOR " + str(exerciseAnnouncements[exerciseIndex]) + " IS IN " + str(nextTimeInterval/60) + " MINUTES"
+def stretch():
+    thread = threading.Thread(target=sleep_and_activity, args=("stretching", STRETCHES, (240, 900)), kwargs={})
+    thread.start()
 
-	print requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data=lotteryTimeString)
-	print lotteryTimeString
-	print "sleeping:",nextTimeInterval
-	time.sleep(nextTimeInterval)
-
-    return str(exercises[exerciseIndex])
-
-
-def selectPerson(exercise, exerciseType):
-
-    # Select number of reps
-    exerciseReps = random.randrange(10, 35)
-
-    # Pull all users from API
-    # slackUsers = extractSlackUsers(USERTOKENSTRING)
-    slackUsers = ""
-    if exerciseType == "strength":
-	slackUsers = ["@jorrie", "@austin_feight", "@jordan", "@adam", "@daniel", "@sara", "@abdul", "@evan", "@jeremy"]
-    elif exerciseType == "stretch":
-	slackUsers = ["@samara"]
-
-    # Select index of team member from array of team members
-    selection = random.randrange(0, len(slackUsers))
-
-    lotteryWinnerString = str(exerciseReps) + str(exercise) + "RIGHT NOW " + slackUsers[selection]
-    print lotteryWinnerString
-    requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data=lotteryWinnerString)
-
-    """with open("results.csv", 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow([slackUsers[selection], exerciseReps, exercise])"""
-
-requests.post("https://makeschool.slack.com/services/hooks/slackbot?token="+URLTOKENSTRING+"&channel=%23exercise", data="Good morning, @channel! Who's ready to get ripped?")
-for i in range(10000):
-    exercise = selectExerciseAndStartTime("strength")
-    stretch = selectExerciseAndStartTime("stretch")
-    selectPerson(exercise, "strength")
-    selectPerson(stretch, "stretch")
-
-
+if __name__ == "__main__":
+    exercise()
+    stretch()
