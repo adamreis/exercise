@@ -44,38 +44,38 @@ EXERCISES = {
 STRETCHES = {
     "calf": {
        "name": "CALF STRETCH",
-        "units": "",
-        "rep_range": (1,2)
+        "units": "SECOND ",
+        "rep_range": (7,21)
     },
     "quad": {
        "name": "QUAD STRETCH",
-        "units": "",
-        "rep_range": (1,2)
+        "units": "SECOND ",
+        "rep_range": (7,21)
     },
     "hip_flexor": {
        "name": "HIP FLEXOR STRETCH",
-        "units": "",
-        "rep_range": (1,2)
+        "units": "SECOND ",
+        "rep_range": (7,21)
     },
     "side": {
        "name": "SIDE STRETCH",
-        "units": "",
-        "rep_range": (1,2)
+        "units": "SECOND ",
+        "rep_range": (7,21)
     },
     "knee_to_chest": {
        "name": "KNEE TO CHEST STRETCH",
-        "units": "",
-        "rep_range": (1,2)
+        "units": "SECOND ",
+        "rep_range": (7,21)
     },
     "shoulder": {
        "name": "SHOULDER STRETCH",
-        "units": "",
-        "rep_range": (1,2)
+        "units": "SECOND ",
+        "rep_range": (7,21)
     },
     "neck": {
        "name": "NECK STRETCH",
-        "units": "",
-        "rep_range": (1,2)
+        "units": "SECOND ",
+        "rep_range": (7,21)
     },
 }
 
