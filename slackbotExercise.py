@@ -135,5 +135,5 @@ def stretch():
     thread.start()
 
 if __name__ == "__main__":
-    # exercise()
+    exercise()
     stretch()
