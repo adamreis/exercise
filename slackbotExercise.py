@@ -7,10 +7,11 @@ import threading
 import random
 import os
 import datetime
+from slacker import Slacker
 
 try:
     SLACK_API_TOKEN = os.environ['SLACK_API_TOKEN']
-except ImportError:
+except KeyError:
     from secrets import SLACK_API_TOKEN
 
 SLACK = Slacker(SLACK_API_TOKEN)
@@ -99,11 +100,13 @@ def names_for_ids(user_ids):
         if user.get("id") in user_ids:
             names.append(user.get("name"))
 
+    return names
+
 def users_in_channel(channel_name):
     response = SLACK.channels.list()
     channels = response.body.get('channels')
     for channel in channels:
-        if channel.get("name") == channel_name:
+        if "#" + channel.get("name") == channel_name:
             ids = list(channel.get("members"))
             return names_for_ids(ids)
 
@@ -138,4 +141,4 @@ def stretch():
 
 if __name__ == "__main__":
     exercise()
-    stretch()
+    # stretch()
