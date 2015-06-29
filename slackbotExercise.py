@@ -141,4 +141,4 @@ def stretch():
 
 if __name__ == "__main__":
     exercise()
-    # stretch()
+    stretch()
