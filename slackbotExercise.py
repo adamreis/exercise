@@ -6,7 +6,7 @@ import time
 import threading
 import random
 import os
-from datetime import datetime
+from datetime import datetime, time
 
 try:
     SLACK_API_GET_TOKEN = os.environ['SLACK_API_GET_TOKEN']
@@ -17,8 +17,8 @@ except ImportError:
 POST_MESSAGE_BASE_URL = "https://makeschool.slack.com/services/hooks/slackbot"
 LIST_CHANNEL_BASE_URL = "https://slack.com/api/channels.list"
 
-START_TIME = datetime.time(9,0,0)
-END_TIME = datetime.time(20,0,0)
+START_TIME = time(9,0,0)
+END_TIME = time(20,0,0)
 
 EXERCISES = {
     "pushups": {
