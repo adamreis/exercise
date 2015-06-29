@@ -1,3 +1,5 @@
+#!usr/local/bin/python3
+
 from pprint import pprint
 import requests
 import time
