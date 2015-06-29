@@ -123,7 +123,7 @@ def post_to_channel(channel_name, message):
     return requests.post(POST_MESSAGE_BASE_URL, params=params, data=message)
 
 def activity_and_sleep(channel_name, activities, time_interval):
-    if datetime.today() < 5 and START_TIME <= datetime.now().time() <= END_TIME: #weeekday between 9am EST and 5pm PST
+    if datetime.today().weekday() < 5 and START_TIME <= datetime.now().time() <= END_TIME: #weeekday between 9am EST and 5pm PST
         activity = activities.get(random.choice(list(activities.keys())))
         victim = random_user_mention(channel_name)
         reps = random.randrange(*activity.get("rep_range"))
