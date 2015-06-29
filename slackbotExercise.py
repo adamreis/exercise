@@ -5,6 +5,7 @@ import requests
 import time
 import threading
 import random
+import os
 
 try:
     SLACK_API_GET_TOKEN = os.environ['SLACK_API_GET_TOKEN']
