@@ -1,9 +1,14 @@
-from secrets import SLACK_API_GET_TOKEN, SLACK_API_POST_TOKEN
 from pprint import pprint
 import requests
 import time
 import threading
 import random
+
+try:
+    SLACK_API_GET_TOKEN = os.environ['SLACK_API_GET_TOKEN']
+    SLACK_API_POST_TOKEN = os.environ['SLACK_API_POST_TOKEN']
+except ImportError:
+    from secrets import SLACK_API_GET_TOKEN, SLACK_API_POST_TOKEN
 
 POST_MESSAGE_BASE_URL = "https://makeschool.slack.com/services/hooks/slackbot"
 LIST_CHANNEL_BASE_URL = "https://slack.com/api/channels.list"
@@ -83,7 +88,7 @@ def name_for_id(user_id):
     params = {"token": SLACK_API_GET_TOKEN}
     response = requests.get("https://slack.com/api/users.list", params=params)
     users = response.json().get("members")
-    
+
     for user in users:
         if user.get("id") == user_id:
             return user.get("name")
@@ -110,28 +115,25 @@ def post_to_channel(channel_name, message):
     }
     return requests.post(POST_MESSAGE_BASE_URL, params=params, data=message)
 
-def sleep_and_activity(channel_name, activities, time_interval):
+def activity_and_sleep(channel_name, activities, time_interval):
     activity = activities.get(random.choice(list(activities.keys())))
-    delay = int(random.randrange(*time_interval)/60.0)*60
-    
-    announcement = "NEXT LOTTERY FOR {} IS IN {} MINUTES".format(activity.get("name"), int(delay/60))
-    print(announcement)
-    print(post_to_channel(channel_name, announcement))
-    time.sleep(delay)
-    
     victim = random_user_mention(channel_name)
     reps = random.randrange(*activity.get("rep_range"))
     message = "{} {}{} RIGHT NOW {}".format(reps, activity.get("units"), activity.get("name"), victim)
     print(message)
     print(post_to_channel(channel_name, message))
-    sleep_and_activity(channel_name, activities, time_interval)
+
+    delay = int(random.randrange(*time_interval)/60.0)*60
+    time.sleep(delay)
+    
+    activity_and_sleep(channel_name, activities, time_interval)
 
 def exercise():
-    thread = threading.Thread(target=sleep_and_activity, args=("exercise", EXERCISES, (240, 900)), kwargs={})
+    thread = threading.Thread(target=activity_and_sleep, args=("exercise", EXERCISES, (240, 900)), kwargs={})
     thread.start()
 
 def stretch():
-    thread = threading.Thread(target=sleep_and_activity, args=("stretching", STRETCHES, (240, 900)), kwargs={})
+    thread = threading.Thread(target=activity_and_sleep, args=("stretching", STRETCHES, (480, 1800)), kwargs={})
     thread.start()
 
 if __name__ == "__main__":
