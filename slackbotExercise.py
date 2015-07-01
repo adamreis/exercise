@@ -90,29 +90,17 @@ STRETCHES = {
     },
 }
 
-def names_for_ids(user_ids):
-    names = []
-    user_ids = set(user_ids)
-
-    response = SLACK.users.list()
-    users = response.body.get('members')
-    for user in users:
-        if user.get("id") in user_ids:
-            names.append(user.get("name"))
-
-    return names
-
 def users_in_channel(channel_name):
     response = SLACK.channels.list()
     channels = response.body.get('channels')
     for channel in channels:
         if "#" + channel.get("name") == channel_name:
             ids = list(channel.get("members"))
-            return names_for_ids(ids)
+            return ids
 
 def random_user_mention(channel_name):
     users = users_in_channel(channel_name)
-    return "@" + random.choice(users)
+    return "<@{}>".format(random.choice(users))
 
 def activity_and_sleep(channel_name, activities, time_interval):
     weekday_condition = datetime.datetime.today().weekday() < 5
