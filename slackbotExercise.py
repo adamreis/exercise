@@ -98,9 +98,23 @@ def users_in_channel(channel_name):
             ids = list(channel.get("members"))
             return ids
 
+def rep_multiplier_for_user(user_id):
+    response = SLACK.users.info(user_id)
+    title = response.body.get('user').get('profile').get('title')
+    try:
+        multiplier = float(title[title.find("{")+1:title.find("}")])
+    except ValueError:
+        multiplier = 1.0
+    return multiplier
+
 def random_user_mention(channel_name):
     users = users_in_channel(channel_name)
     return "<@{}>".format(random.choice(users))
+
+def adjusted_reps(activity, user):
+    base_count = random.randrange(*activity.get("rep_range"))
+    multiplier = rep_multiplier_for_user(user)
+    return max(1, int(base_count*multiplier))
 
 def activity_and_sleep(channel_name, activities, time_interval):
     weekday_condition = datetime.datetime.today().weekday() < 5
@@ -109,7 +123,7 @@ def activity_and_sleep(channel_name, activities, time_interval):
     if weekday_condition and time_condition : #weekday between 9am EST and 5pm PST
         activity = activities.get(random.choice(list(activities.keys())))
         victim = random_user_mention(channel_name)
-        reps = random.randrange(*activity.get("rep_range"))
+        reps = adjusted_reps(activity, victim)
         message = "{} {}{} RIGHT NOW {}".format(reps, activity.get("units"), activity.get("name"), victim)
         print(message)
         print(SLACK.chat.post_message(channel_name, message))
