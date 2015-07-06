@@ -104,7 +104,7 @@ def rep_multiplier_for_user(user_id):
     title = response.body.get('user').get('profile').get('title')
     try:
         multiplier = float(title[title.find("{")+1:title.find("}")])
-    except ValueError:
+    except:
         multiplier = 1.0
     return multiplier
 
