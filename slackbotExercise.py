@@ -138,7 +138,7 @@ def activity_and_sleep(channel_name, activities, time_interval):
     activity_and_sleep(channel_name, activities, time_interval)
 
 def exercise():
-    thread = threading.Thread(target=activity_and_sleep, args=("#exercise", EXERCISES, (240, 900)), kwargs={})
+    thread = threading.Thread(target=activity_and_sleep, args=("#nyc-exercise", EXERCISES, (240, 900)), kwargs={})
     thread.start()
 
 def stretch():
