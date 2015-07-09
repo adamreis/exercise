@@ -17,7 +17,7 @@ except KeyError:
 SLACK = Slacker(SLACK_API_TOKEN)
 
 START_TIME = datetime.time(9,0,0)
-END_TIME = datetime.time(20,0,0)
+END_TIME = datetime.time(17,0,0)
 
 EXERCISES = {
     "pushups": {
@@ -40,11 +40,11 @@ EXERCISES = {
         "units": "SECOND ",
         "rep_range": (10,35)
     },
-    "laps": {
-       "name": "LAP(S) AROUND OFFICE",
-        "units": "",
-        "rep_range": (1,3)
-    },
+    # "laps": {
+    #    "name": "LAP(S) AROUND OFFICE",
+    #     "units": "",
+    #     "rep_range": (1,3)
+    # },
     "burpies": {
        "name": "BURPIES",
         "units": "",
@@ -147,4 +147,4 @@ def stretch():
 
 if __name__ == "__main__":
     exercise()
-    stretch()
+    # stretch()
