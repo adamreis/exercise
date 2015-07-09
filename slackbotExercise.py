@@ -146,5 +146,6 @@ def stretch():
     thread.start()
 
 if __name__ == "__main__":
+    print("HI AUSTIN")
     exercise()
     # stretch()
