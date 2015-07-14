@@ -124,7 +124,7 @@ def activity_and_sleep(channel_name, activities, time_interval):
     weekday_condition = datetime.datetime.today().weekday() < 5
     time_condition = START_TIME <= datetime.datetime.now().time() <= END_TIME
     
-    if weekday_condition and time_condition : #weekday between 9am EST and 5pm PST
+    if weekday_condition and time_condition : #weekday between 9am EST and 5pm EST
         activity = activities.get(random.choice(list(activities.keys())))
         victim = random_user(channel_name)
         reps = adjusted_reps(activity, victim)
