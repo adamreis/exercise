@@ -90,6 +90,22 @@ STRETCHES = {
     },
 }
 
+{
+    'channels':
+    [
+        {
+            "name": "nyc-exercise",
+            "members": ["324chjkssdf", "23rkjlhsdf", ]
+        },
+        {
+            "name": "nyc-stretching",
+            "members": ["324chjksssdf", "23rkjlhsdf", ]
+        },
+
+
+    ]
+}
+
 def users_in_channel(channel_name):
     response = SLACK.channels.list()
     channels = response.body.get('channels')
@@ -99,7 +115,6 @@ def users_in_channel(channel_name):
             return ids
 
 def rep_multiplier_for_user(user_id):
-    print('user id: {}'.format(user_id))
     response = SLACK.users.info(user_id)
     title = response.body.get('user').get('profile').get('title')
     try:
@@ -142,10 +157,9 @@ def exercise():
     thread.start()
 
 def stretch():
-    thread = threading.Thread(target=activity_and_sleep, args=("#stretching", STRETCHES, (480, 1800)), kwargs={})
+    thread = threading.Thread(target=activity_and_sleep, args=("#nyc-stretching", STRETCHES, (800, 1800)), kwargs={})
     thread.start()
 
 if __name__ == "__main__":
-    print("HI AUSTIN")
     exercise()
-    # stretch()
+    stretch()
