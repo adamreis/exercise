@@ -90,20 +90,17 @@ STRETCHES = {
     },
 }
 
-{
-    'channels':
-    [
-        {
-            "name": "nyc-exercise",
-            "members": ["324chjkssdf", "23rkjlhsdf", ]
-        },
-        {
-            "name": "nyc-stretching",
-            "members": ["324chjksssdf", "23rkjlhsdf", ]
-        },
-
-
-    ]
+MEDITATIONS = {
+    "deep_breaths": {
+        "name": "DEEP BREATHS",
+        "units": "",
+        "rep_range": (2,14)
+    },
+    "really_deep_breaths": {
+        "name": "*REALLY* DEEP BREATHS",
+        "units": "",
+        "rep_range": (1,7)
+    },
 }
 
 def users_in_channel(channel_name):
@@ -158,6 +155,10 @@ def exercise():
 
 def stretch():
     thread = threading.Thread(target=activity_and_sleep, args=("#nyc-stretching", STRETCHES, (800, 1800)), kwargs={})
+    thread.start()
+
+def meditate():
+    thread = threading.Thread(target=activity_and_sleep, args=("#nyc-meditate", MEDITATIONS, (600, 1500)), kwargs={})
     thread.start()
 
 if __name__ == "__main__":
