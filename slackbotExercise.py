@@ -164,3 +164,4 @@ def meditate():
 if __name__ == "__main__":
     exercise()
     stretch()
+    meditate()
